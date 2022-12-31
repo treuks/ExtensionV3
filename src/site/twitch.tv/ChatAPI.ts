@@ -20,7 +20,12 @@ const data = reactive({
 	sys: true,
 	visible: true,
 	paused: false, // whether or not scrolling is paused
+	duration: 1000,
+
 	scrollBuffer: [] as Twitch.ChatMessage[], // twitch chat message buffe when scrolling is paused
+	scrollClear: () => {
+		return;
+	},
 
 	sendMessage: (() => {
 		return;
@@ -86,7 +91,7 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 					}
 				}
 
-				nextTick(() => scrollToLive());
+				nextTick(() => scrollToLive(data.duration));
 
 				flushTimeout = undefined;
 			}, 25);
@@ -96,14 +101,35 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 	/**
 	 * Scrolls the chat to the bottom
 	 */
-	function scrollToLive(): void {
+	function scrollToLive(duration = 0): void {
 		if (!container.value || !bounds?.value || data.paused) return;
+
+		data.scrollClear();
 
 		data.sys = true;
 
-		container.value.scrollTo({ top: container.value.scrollHeight });
+		const from = container.value.scrollTop;
+		const start = Date.now();
 
-		bounds.value = container.value.getBoundingClientRect();
+		let shouldClear = false;
+
+		function scroll() {
+			if (!container.value || !bounds?.value || data.paused || shouldClear) return;
+
+			const currentTime = Date.now();
+			const time = Math.min(1, (currentTime - start) / duration);
+			container.value.scrollTop = time * (container.value.scrollHeight - from) + from;
+
+			if (time < 1) requestAnimationFrame(scroll);
+			else bounds.value = container.value.getBoundingClientRect();
+		}
+
+		data.scrollClear = () => (shouldClear = true);
+
+		if (duration < 1) {
+			container.value.scrollTo({ top: container.value.scrollHeight });
+			bounds.value = container.value.getBoundingClientRect();
+		} else requestAnimationFrame(scroll);
 	}
 
 	/**
@@ -157,8 +183,8 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		}
 	}
 
-	function onWheel() {
-		data.userInput++;
+	function onWheel(e: WheelEvent) {
+		if (e.deltaX > 0) data.userInput++;
 	}
 
 	const {
@@ -171,6 +197,7 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		init,
 		scrollBuffer,
 		paused,
+		duration,
 		isModerator,
 		isVIP,
 		sendMessage,
@@ -190,6 +217,7 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		scrollInit: init,
 		scrollBuffer: scrollBuffer,
 		scrollPaused: paused,
+		scrollDuration: duration,
 
 		sendMessage,
 		clearMessages,
