@@ -184,7 +184,7 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 	}
 
 	function onWheel(e: WheelEvent) {
-		if (e.deltaX > 0) data.userInput++;
+		if (e.deltaY < 0) data.userInput++;
 	}
 
 	const {
