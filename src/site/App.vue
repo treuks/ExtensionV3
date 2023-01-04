@@ -86,7 +86,6 @@ onMounted(() => {
 	--seventv-text-color-normal: #f0f0f0;
 	--seventv-text-color-secondary: #f0f0f078;
 	--seventv-highlight-neutral-1: #8080803b;
-	--seventv-highlight-neutral-2: #8080805b;
 	--seventv-background-transparent-1: #161616c4;
 	--seventv-background-transparent-2: #1b1b1bc4;
 	--seventv-border-transparent-1: #ffffff1a;
@@ -96,7 +95,6 @@ onMounted(() => {
 	--seventv-text-color-normal: #161616;
 	--seventv-text-color-secondary: #161616b3;
 	--seventv-highlight-neutral-1: #cfcfcf9e;
-	--seventv-highlight-neutral-2: #c7c7c769;
 	--seventv-background-transparent-1: #f7f7f7c4;
 	--seventv-background-transparent-2: #e7e7e7c4;
 	--seventv-border-transparent-1: #0000001a;

@@ -259,7 +259,7 @@ onUnmounted(() => {
 	}
 }
 .provider:hover {
-	background: var(--seventv-highlight-neutral-2);
+	background: #80808029;
 }
 
 .logo {
