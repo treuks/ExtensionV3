@@ -258,6 +258,9 @@ onUnmounted(() => {
 		color: var(--seventv-text-color-normal);
 	}
 }
+.provider:hover {
+	background: var(--seventv-highlight-neutral-2);
+}
 
 .logo {
 	width: 2rem;
