@@ -1,14 +1,13 @@
-import { defineConfig, loadEnv } from "vite";
-import { spawn } from "child_process";
 import { getManifest } from "./manifest.config";
+import vue from "@vitejs/plugin-vue";
+import { spawn } from "child_process";
 import fs from "fs-extra";
 import path from "path";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig, loadEnv } from "vite";
 
 const r = (...args: string[]) => path.resolve(__dirname, ...args);
 
 const chunks = {
-	composable: ["./src/composable/useModule.ts", "./src/composable/useTooltip.ts"],
 	common: [
 		"./src/common/Async.ts",
 		"./src/common/Logger.ts",
@@ -26,6 +25,8 @@ const chunks = {
 	],
 	tw_mod_chat: ["./src/site/twitch.tv/modules/chat/ChatModule.vue"],
 	tw_mod_chat_input: ["./src/site/twitch.tv/modules/chat-input/ChatInputModule.vue"],
+	tw_mod_emote_menu: ["./src/site/twitch.tv/modules/emote-menu/EmoteMenuModule.vue"],
+	tw_mod_settings: ["./src/site/twitch.tv/modules/settings/SettingsModule.vue"],
 };
 
 // https://vitejs.dev/config/

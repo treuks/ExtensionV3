@@ -51,10 +51,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onBeforeUnmount } from "vue";
-import { determineRatio } from "./EmoteMenuBackend";
-import Logo from "@/common/Logo.vue";
-import ChatEmote from "../chat/components/ChatEmote.vue";
+import { onBeforeUnmount, reactive, ref } from "vue";
+import ChatEmote from "@/site/twitch.tv/modules/chat/components/ChatEmote.vue";
+import { determineRatio } from "@/site/twitch.tv/modules/emote-menu/EmoteMenuBackend";
+import Logo from "@/assets/svg/Logo.vue";
 import UiScrollable from "@/ui/UiScrollable.vue";
 
 defineProps<{

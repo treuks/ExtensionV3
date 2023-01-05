@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import { useModule } from "@/composable/useModule";
 import { useComponentHook } from "@/common/ReactHooks";
-import EmoteMenu from "./EmoteMenu.vue";
+import { useModule } from "@/composable/useModule";
+import EmoteMenu from "@/site/twitch.tv/modules/emote-menu/EmoteMenu.vue";
 
 const { markAsReady } = useModule("emote-menu", {
 	name: "Emote Menu",
