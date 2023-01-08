@@ -1,8 +1,10 @@
 <template>
 	<div ref="tooltip" class="seventv-tooltip" tooltip-type="emote">
 		<img ref="imgRef" class="tooltip-emote" :srcset="srcSet" :alt="emote.name" />
-		<h3 class="emote-name">{{ emote.name }}</h3>
-		<Logo class="logo" :provider="emote.provider" />
+		<div class="spacer">
+			<h3 class="emote-name">{{ emote.name }}</h3>
+			<Logo class="logo" :provider="emote.provider" />
+		</div>
 	</div>
 </template>
 
@@ -34,42 +36,38 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 
 <style scoped lang="scss">
 .seventv-tooltip {
-	display: grid;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	min-width: 12em;
 	background-color: var(--seventv-background-transparent-2);
 	backdrop-filter: blur(16px);
 	outline: 1px solid var(--seventv-border-transparent-1);
 	border-radius: 0.25em;
 	padding: 1.3em;
+	justify-content: center;
+	align-items: center;
 }
 .emote-name {
-	grid-row-start: 2;
-	grid-column-start: 1;
 	font-size: 16px;
 	font-weight: 300;
 	max-width: 300px;
 	word-break: break-all;
-	justify-self: start;
-	align-self: center;
+	float: left;
 }
 
 .logo {
-	grid-row-start: 2;
-	grid-column-start: 2;
-	align-self: end;
-	justify-self: center;
 	margin-left: 2em;
-	width: 18px;
+	width: 24px;
 	height: auto;
+	float: right;
 }
 .tooltip-emote {
-	grid-row-start: 1;
-	grid-column-start: 1;
-	grid-column-end: 3;
-	justify-self: center;
-	align-self: center;
 	padding-bottom: 3em;
 	height: auto;
 	max-width: 100px;
+}
+.spacer {
+	flex: 1;
 }
 </style>
