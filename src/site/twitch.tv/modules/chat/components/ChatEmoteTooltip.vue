@@ -40,7 +40,7 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	backdrop-filter: blur(16px);
 	outline: 1px solid var(--seventv-border-transparent-1);
 	border-radius: 0.25em;
-	padding: 1.5em;
+	padding: 1.3em;
 }
 .emote-name {
 	grid-row-start: 2;
@@ -68,7 +68,6 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	grid-column-end: 3;
 	justify-self: center;
 	align-self: center;
-	padding-top: 1.5em;
 	padding-bottom: 3em;
 	height: auto;
 	max-width: 100px;
