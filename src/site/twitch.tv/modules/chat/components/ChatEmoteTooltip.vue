@@ -39,7 +39,7 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	background-color: var(--seventv-background-transparent-2);
 	backdrop-filter: blur(16px);
 	outline: 1px solid var(--seventv-border-transparent-1);
-	border-radius: 12px;
+	border-radius: 0.25em;
 	padding: 1.5em;
 }
 .emote-name {
