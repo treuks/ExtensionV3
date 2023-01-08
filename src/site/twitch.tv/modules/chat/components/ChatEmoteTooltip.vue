@@ -3,6 +3,7 @@
 		<img ref="imgRef" class="tooltip-emote" :srcset="srcSet" :alt="emote.name" />
 		<div class="spacer">
 			<h3 class="emote-name">{{ emote.name }}</h3>
+			<div class="spacer"></div>
 			<Logo class="logo" :provider="emote.provider" />
 		</div>
 	</div>
@@ -45,7 +46,6 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	outline: 1px solid var(--seventv-border-transparent-1);
 	border-radius: 0.25em;
 	padding: 1.3em;
-	justify-content: center;
 	align-items: center;
 }
 .emote-name {
@@ -57,10 +57,10 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 }
 
 .logo {
-	margin-left: 2em;
 	width: 24px;
 	height: auto;
 	float: right;
+	align-self: end;
 }
 .tooltip-emote {
 	padding-bottom: 3em;
@@ -68,6 +68,9 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	max-width: 100px;
 }
 .spacer {
+	display: flex;
 	flex: 1;
+	align-items: center;
+	justify-items: stretch;
 }
 </style>
