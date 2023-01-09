@@ -46,7 +46,6 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	outline: 1px solid var(--seventv-border-transparent-1);
 	border-radius: 0.25em;
 	padding: 1.3em;
-	align-items: center;
 }
 .emote-name {
 	font-size: 16px;
