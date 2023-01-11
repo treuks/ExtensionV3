@@ -34,6 +34,7 @@ const height = computed(() => `${props.height * 3}px`);
 .seventv-tooltip {
 	display: flex;
 	flex-direction: column;
+	row-gap: 1em;
 	align-items: center;
 	max-width: 12em;
 	background-color: var(--seventv-background-transparent-2);
@@ -56,7 +57,6 @@ const height = computed(() => `${props.height * 3}px`);
 	align-self: end;
 }
 .tooltip-emote {
-	padding-bottom: 3em;
 	width: v-bind("width");
 	height: v-bind("height");
 }

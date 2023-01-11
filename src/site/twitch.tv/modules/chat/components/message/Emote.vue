@@ -1,10 +1,10 @@
 <template>
 	<div class="emote-box">
 		<img
-			v-if="srcSet"
+			v-if="srcset"
 			ref="imgRef"
 			class="chat-emote"
-			:srcset="srcSet"
+			:srcset="srcset"
 			:alt="emote.name"
 			:class="{ blur: hideUnlisted && emote.data?.listed === false }"
 			@click="openCard"
@@ -16,7 +16,7 @@
 			<img
 				class="chat-emote zero-width-emote"
 				:class="{ blur: hideUnlisted && e.data?.listed === false }"
-				:srcset="getSrcSet(e)"
+				:srcset="srcset"
 				:alt="' ' + e.name"
 			/>
 		</template>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { imageHostToSrcset } from "@/common/Image";
 import { useConfig } from "@/composable/useSettings";
 import { useTooltip } from "@/composable/useTooltip";
 import { tools } from "@/site/twitch.tv/modules/chat/ChatBackend";
@@ -39,17 +40,7 @@ const props = withDefaults(
 	{ unload: false, imageFormat: "WEBP" },
 );
 
-const srcSet = computed(() => (props.unload ? "" : getSrcSet(props.emote)));
-
-function getSrcSet(emote: SevenTV.ActiveEmote) {
-	const host = emote.data?.host ?? { url: "", files: [] };
-	const format = host.files.some((fi) => fi.format === props.imageFormat) ? props.imageFormat : host.files[0]?.format;
-
-	return host.files
-		.filter((f) => f.format === format)
-		.map((f, i) => `${host.url}/${f.name} ${i + 1}x`)
-		.join(", ");
-}
+const srcset = computed(() => (props.emote.data ? (props.unload ? "" : imageHostToSrcset(props.emote.data.host)) : ""));
 
 const imgRef = ref<HTMLImageElement>();
 
@@ -58,10 +49,10 @@ const hideUnlisted = useConfig<boolean>("general.blur_unlisted_emotes");
 const width = ref(0);
 const height = ref(0);
 const onImageLoad = (event: Event) => {
-	if (event == null) return;
-	const target = event.target as HTMLImageElement;
-	width.value = target.naturalWidth;
-	height.value = target.naturalHeight;
+	if (!(event.target instanceof HTMLImageElement)) return;
+
+	width.value = event.target.naturalWidth;
+	height.value = event.target.naturalHeight;
 };
 
 const { show, hide } = useTooltip(EmoteTooltip, {
