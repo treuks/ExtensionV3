@@ -8,6 +8,7 @@
 			:alt="emote.name"
 			:class="{ blur: hideUnlisted && emote.data?.listed === false }"
 			@click="openCard"
+			@load="onImageLoad"
 			@mouseenter="show(imgRef)"
 			@mouseleave="hide()"
 		/>
@@ -50,14 +51,24 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 		.join(", ");
 }
 
-const imgRef = ref<HTMLElement>();
-
-const { show, hide } = useTooltip(ChatEmoteTooltip, {
-	emote: props.emote,
-});
+const imgRef = ref<HTMLImageElement>();
 
 const hideUnlisted = useConfig<boolean>("general.blur_unlisted_emotes");
 
+const width = ref(0);
+const height = ref(0);
+const onImageLoad = (event: Event) => {
+	if (event == null) return;
+	const target = event.target as HTMLImageElement;
+	width.value = target.naturalWidth;
+	height.value = target.naturalHeight;
+};
+
+const { show, hide } = useTooltip(ChatEmoteTooltip, {
+	emote: props.emote,
+	width: width,
+	height: height,
+});
 const openCard = (ev: MouseEvent) => {
 	if (!props.emote.id || props.emote.provider !== "TWITCH") return;
 

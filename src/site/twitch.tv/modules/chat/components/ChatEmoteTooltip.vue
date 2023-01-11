@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { imageHostToSrcset } from "@/common/Image";
 import Logo from "@/assets/svg/Logo.vue";
 
 const props = withDefaults(
@@ -18,21 +19,15 @@ const props = withDefaults(
 		emote: SevenTV.ActiveEmote;
 		imageFormat?: SevenTV.ImageFormat;
 		unload?: boolean;
+		height: number;
+		width: number;
 	}>(),
 	{ unload: false, imageFormat: "WEBP" },
 );
 
-const srcSet = computed(() => (props.unload ? "" : getSrcSet(props.emote)));
-
-function getSrcSet(emote: SevenTV.ActiveEmote) {
-	const host = emote.data?.host ?? { url: "", files: [] };
-	const format = host.files.some((fi) => fi.format === props.imageFormat) ? props.imageFormat : host.files[0]?.format;
-
-	return host.files
-		.filter((f) => f.format === format)
-		.map((f, i) => `${host.url}/${f.name} ${i - 1}x`)
-		.join(", ");
-}
+const srcSet = computed(() => (props.unload ? "" : imageHostToSrcset(props.emote.data!.host, props.imageFormat)));
+const width = computed(() => `${props.width * 3}px`);
+const height = computed(() => `${props.height * 3}px`);
 </script>
 
 <style scoped lang="scss">
@@ -40,34 +35,34 @@ function getSrcSet(emote: SevenTV.ActiveEmote) {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 12em;
+	max-width: 12em;
 	background-color: var(--seventv-background-transparent-2);
-	backdrop-filter: blur(16px);
-	outline: 1px solid var(--seventv-border-transparent-1);
+	backdrop-filter: blur(1em);
+	outline: 0.1em solid var(--seventv-border-transparent-1);
 	border-radius: 0.25em;
 	padding: 1.3em;
 }
 .emote-name {
-	font-size: 16px;
+	font-size: 1.5rem;
 	font-weight: 300;
-	max-width: 300px;
+	max-width: 18em;
 	word-break: break-all;
 	float: left;
 }
-
 .logo {
-	width: 24px;
+	width: 1.6em;
 	height: auto;
 	float: right;
 	align-self: end;
 }
 .tooltip-emote {
 	padding-bottom: 3em;
-	height: auto;
-	max-width: 100px;
+	width: v-bind("width");
+	height: v-bind("height");
 }
 .spacer {
 	display: flex;
+	column-gap: 0.25em;
 	flex: 1;
 	align-items: center;
 	justify-items: stretch;
