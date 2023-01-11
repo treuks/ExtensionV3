@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { imageHostToSrcset } from "@/common/Image";
-import Logo from "@/assets/svg/Logo.vue";
+import Logo from "@/assets/svg/logos/Logo.vue";
 
 const props = withDefaults(
 	defineProps<{

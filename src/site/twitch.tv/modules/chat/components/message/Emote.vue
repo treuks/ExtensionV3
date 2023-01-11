@@ -28,7 +28,7 @@ import { computed, ref } from "vue";
 import { useConfig } from "@/composable/useSettings";
 import { useTooltip } from "@/composable/useTooltip";
 import { tools } from "@/site/twitch.tv/modules/chat/ChatBackend";
-import ChatEmoteTooltip from "@/site/twitch.tv/modules/chat/components/ChatEmoteTooltip.vue";
+import EmoteTooltip from "@/site/twitch.tv/modules/chat/components/message/EmoteTooltip.vue";
 
 const props = withDefaults(
 	defineProps<{
@@ -64,7 +64,7 @@ const onImageLoad = (event: Event) => {
 	height.value = target.naturalHeight;
 };
 
-const { show, hide } = useTooltip(ChatEmoteTooltip, {
+const { show, hide } = useTooltip(EmoteTooltip, {
 	emote: props.emote,
 	width: width,
 	height: height,

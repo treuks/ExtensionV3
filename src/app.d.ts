@@ -58,13 +58,30 @@ declare namespace SevenTV {
 		value: T;
 	}
 
-	interface SettingNode<T extends SettingType> {
+	interface SettingNode<T extends SettingType, K extends SettingNode.ComponentType = "CUSTOM"> {
 		key: string;
 		label: string;
 		hint?: string;
 		type: SettingNode.ComponentType;
 		component?: Raw<object>;
-		options?: SettingType[];
+		options?: {
+			SELECT: [string, T][];
+			DROPDOWN: [string, T][];
+			CHECKBOX: never;
+			INPUT: string;
+			TOGGLE: {
+				left: string;
+				right: string;
+			};
+			SLIDER: {
+				min: number;
+				max: number;
+				step: number;
+				unit: string;
+			};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			CUSTOM: any;
+		}[K];
 		predicate?: (p: T) => boolean;
 
 		value?: T;
@@ -74,7 +91,7 @@ declare namespace SevenTV {
 	type SettingType = boolean | number | string | object;
 
 	namespace SettingNode {
-		type ComponentType = "SELECT" | "DROPDOWN" | "CHECKBOX" | "INPUT" | "TOGGLE" | "CUSTOM";
+		type ComponentType = "SELECT" | "DROPDOWN" | "CHECKBOX" | "INPUT" | "TOGGLE" | "SLIDER" | "CUSTOM";
 	}
 
 	interface ActiveEmote {
@@ -116,6 +133,7 @@ declare namespace SevenTV {
 		id: ObjectID;
 		kind: K;
 		name: string;
+		user_ids: string[];
 		data: {
 			BADGE: CosmeticBadge;
 			PAINT: CosmeticPaint;
@@ -156,8 +174,36 @@ declare namespace SevenTV {
 		id: ObjectID;
 		kind: EntitlementKind;
 		user?: User;
-		cid?: string;
+		user_id: ObjectID;
 		ref_id: ObjectID;
+	}
+
+	interface OldCosmeticsResponse {
+		t: number;
+		badges: OldCosmeticBadge[];
+		paints: OldCosmeticPaint[];
+	}
+
+	interface OldCosmeticBadge {
+		id: ObjectID;
+		users: string[];
+		name: string;
+		tooltip: string;
+		urls: string[][];
+	}
+
+	interface OldCosmeticPaint {
+		id: ObjectID;
+		users: string[];
+		name: string;
+		function: string;
+		color: number | null;
+		stops: CosmeticPaintStop[];
+		repeat: boolean;
+		angle: number;
+		shape?: string;
+		image_url?: string;
+		drop_shadows: CosmeticPaintShadow[];
 	}
 
 	type UserType = "" | "BOT" | "SYSTEM";

@@ -1,11 +1,15 @@
 import { Ref, computed, nextTick, reactive, ref, toRefs, watchEffect } from "vue";
 import { useStore } from "@/store/main";
+import { useConfig } from "@/composable/useSettings";
 import UiScrollableVue from "@/ui/UiScrollable.vue";
+
+const scrollduration = useConfig<number>("chat.smooth_scroll_duration");
+const lineLimit = useConfig<number>("chat.line_limit");
 
 const data = reactive({
 	// Message Data
-	messages: [] as Twitch.ChatMessage[],
-	messageBuffer: [] as Twitch.ChatMessage[],
+	messages: [] as Twitch.DisplayableMessage[],
+	messageBuffer: [] as Twitch.DisplayableMessage[],
 	chatters: {} as Record<string, object>,
 
 	// Emote Data
@@ -13,30 +17,30 @@ const data = reactive({
 	emoteProviders: {} as Record<SevenTV.Provider, Record<string, SevenTV.EmoteSet>>,
 
 	// Cosmetics
-	cosmetics: {} as Record<string, SevenTV.Cosmetic>,
-	entitledUsers: {} as Record<
-		string,
-		{
-			BADGE: SevenTV.ObjectID[];
-			PAINT: SevenTV.ObjectID[];
-			EMOTE_SET: SevenTV.ObjectID[];
-		}
-	>,
 	twitchBadgeSets: {} as Twitch.BadgeSets | null,
 
 	// User State Data
 	isModerator: false,
 	isVIP: false,
+	isDarkTheme: 1,
+	primaryColorHex: "#000000",
+	useHighContrastColors: true,
+	showTimestamps: false,
 	currentChannel: {} as CurrentChannel,
 
 	// Scroll Data
 	userInput: 0,
-	lineLimit: 150,
+	lineLimit: lineLimit,
 	init: false,
 	sys: true,
 	visible: true,
 	paused: false, // whether or not scrolling is paused
-	scrollBuffer: [] as Twitch.ChatMessage[], // twitch chat message buffe when scrolling is paused
+	duration: scrollduration,
+
+	scrollBuffer: [] as Twitch.DisplayableMessage[], // twitch chat message buffe when scrolling is paused
+	scrollClear: () => {
+		return;
+	},
 
 	// Functions
 	sendMessage: (() => {
@@ -62,10 +66,10 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		}
 	});
 
-	function addMessage(message: Twitch.ChatMessage): void {
+	function addMessage(message: Twitch.DisplayableMessage): void {
 		if (data.paused) {
 			// if scrolling is paused, buffer the message
-			data.scrollBuffer.push(message as Twitch.ChatMessage);
+			data.scrollBuffer.push(message as Twitch.DisplayableMessage);
 			if (data.scrollBuffer.length > data.lineLimit) data.scrollBuffer.shift();
 
 			return;
@@ -111,7 +115,7 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 					}
 				}
 
-				nextTick(() => scrollToLive());
+				nextTick(() => scrollToLive(data.duration));
 
 				flushTimeout = undefined;
 			}, 25);
@@ -121,14 +125,35 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 	/**
 	 * Scrolls the chat to the bottom
 	 */
-	function scrollToLive(): void {
+	function scrollToLive(duration = 0): void {
 		if (!container.value || !bounds?.value || data.paused) return;
+
+		data.scrollClear();
 
 		data.sys = true;
 
-		container.value.scrollTo({ top: container.value.scrollHeight });
+		const from = container.value.scrollTop;
+		const start = Date.now();
 
-		bounds.value = container.value.getBoundingClientRect();
+		let shouldClear = false;
+
+		function scroll() {
+			if (!container.value || !bounds?.value || data.paused || shouldClear) return;
+
+			const currentTime = Date.now();
+			const time = Math.min(1, (currentTime - start) / duration);
+			container.value.scrollTop = time * (container.value.scrollHeight - from) + from;
+
+			if (time < 1) requestAnimationFrame(scroll);
+			else bounds.value = container.value.getBoundingClientRect();
+		}
+
+		data.scrollClear = () => (shouldClear = true);
+
+		if (duration < 1) {
+			container.value.scrollTo({ top: container.value.scrollHeight });
+			bounds.value = container.value.getBoundingClientRect();
+		} else requestAnimationFrame(scroll);
 	}
 
 	/**
@@ -182,8 +207,8 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		}
 	}
 
-	function onWheel() {
-		data.userInput++;
+	function onWheel(e: WheelEvent) {
+		if (e.deltaY < 0) data.userInput++;
 	}
 
 	const {
@@ -192,17 +217,20 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		emoteMap,
 		emoteProviders,
 		chatters,
-		cosmetics,
-		entitledUsers,
 		twitchBadgeSets,
 		sys,
 		init,
 		scrollBuffer,
 		paused,
+		duration,
 		isModerator,
 		isVIP,
+		isDarkTheme,
 		sendMessage,
 		currentChannel,
+		primaryColorHex,
+		useHighContrastColors,
+		showTimestamps,
 	} = toRefs(data);
 
 	return {
@@ -211,18 +239,21 @@ export function useChatAPI(scroller?: Ref<InstanceType<typeof UiScrollableVue> |
 		emoteMap: emoteMap,
 		emoteProviders: emoteProviders,
 		chatters: chatters,
-		cosmetics: cosmetics,
-		entitledUsers: entitledUsers,
 		twitchBadgeSets: twitchBadgeSets,
 
 		isModerator: isModerator,
 		isVIP: isVIP,
+		isDarkTheme: isDarkTheme,
+		primaryColorHex: primaryColorHex,
+		useHighContrastColors: useHighContrastColors,
+		showTimestamps: showTimestamps,
 		currentChannel: currentChannel,
 
 		scrollSys: sys,
 		scrollInit: init,
 		scrollBuffer: scrollBuffer,
 		scrollPaused: paused,
+		scrollDuration: duration,
 
 		sendMessage,
 		clear,

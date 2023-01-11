@@ -34,7 +34,7 @@ export function convertTwitchEmote(data: Partial<Twitch.TwitchEmote>): SevenTV.E
 		listed: true,
 		owner: null,
 		host: {
-			url: "https://static-cdn.jtvnw.net/emoticons/v2/" + data.id + "/default/dark",
+			url: "//static-cdn.jtvnw.net/emoticons/v2/" + data.id + "/default/dark",
 			files: [
 				{
 					name: "1.0",
@@ -51,6 +51,39 @@ export function convertTwitchEmote(data: Partial<Twitch.TwitchEmote>): SevenTV.E
 				{
 					name: "4.0",
 					format: "PNG",
+				},
+			],
+		},
+	};
+}
+
+export function convertCheerEmote(data: Twitch.ChatMessage.Part.EmoteContent): SevenTV.Emote {
+	return {
+		id: data.emoteID ?? "",
+		name: `${data.alt} ${data.cheerAmount}`,
+		flags: 0,
+		tags: [],
+		lifecycle: 3,
+		listed: true,
+		owner: null,
+		host: {
+			url: data.images?.dark["1x"].split("/").slice(0, -1).join("/") ?? "",
+			files: [
+				{
+					name: "1.gif",
+					format: "GIF",
+				},
+				{
+					name: "2.gif",
+					format: "GIF",
+				},
+				{
+					name: "3.gif",
+					format: "GIF",
+				},
+				{
+					name: "4.gif",
+					format: "GIF",
 				},
 			],
 		},
@@ -94,7 +127,7 @@ export function convertBttvEmote(data: BTTV.Emote): SevenTV.Emote {
 		listed: true,
 		owner: null,
 		host: {
-			url: "https://cdn.betterttv.net/emote/" + data.id,
+			url: "//cdn.betterttv.net/emote/" + data.id,
 			files: [
 				{
 					name: "1x",
@@ -167,4 +200,48 @@ export function convertFFZEmote(data: FFZ.Emote): SevenTV.Emote {
 			}),
 		},
 	};
+}
+
+export function convertSeventvOldCosmetics(
+	data: SevenTV.OldCosmeticsResponse,
+): [SevenTV.Cosmetic<"BADGE">[], SevenTV.Cosmetic<"PAINT">[]] {
+	const badges = [] as SevenTV.Cosmetic<"BADGE">[];
+	const paints = [] as SevenTV.Cosmetic<"PAINT">[];
+
+	for (const badge of data.badges) {
+		badges.push({
+			id: badge.id,
+			kind: "BADGE",
+			name: badge.name,
+			user_ids: badge.users,
+			data: {
+				tooltip: badge.tooltip,
+				host: {
+					url: "//cdn.7tv.app/badge/" + badge.id,
+					files: [{ name: "1x" }, { name: "2x" }, { name: "3x" }],
+				},
+			},
+		} as SevenTV.Cosmetic<"BADGE">);
+	}
+
+	for (const paint of data.paints) {
+		paints.push({
+			id: paint.id,
+			kind: "PAINT",
+			name: paint.name,
+			user_ids: paint.users,
+			data: {
+				angle: paint.angle,
+				color: paint.color,
+				function: paint.function.replace("-", "_").toUpperCase(),
+				image_url: paint.image_url ?? null,
+				repeat: paint.repeat ?? false,
+				shadows: paint.drop_shadows ?? [],
+				shape: paint.shape ?? null,
+				stops: paint.stops ?? [],
+			},
+		} as SevenTV.Cosmetic<"PAINT">);
+	}
+
+	return [badges, paints];
 }

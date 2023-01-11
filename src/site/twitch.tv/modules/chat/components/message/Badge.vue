@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useTooltip } from "@/composable/useTooltip";
-import ChatBadgeTooltip from "./ChatBadgeTooltip.vue";
+import BadgeTooltip from "./BadgeTooltip.vue";
 
 const props = defineProps<{
 	alt: string;
@@ -23,8 +23,8 @@ const srcset = {
 
 const imgRef = ref<HTMLElement>();
 
-const { show, hide } = useTooltip(ChatBadgeTooltip, {
-	badge: props.badge,
+const { show, hide } = useTooltip(BadgeTooltip, {
+	alt: props.alt,
 });
 </script>
 
