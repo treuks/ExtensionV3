@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { onClickOutside } from "@vueuse/core";
+import { useStore } from "@/store/main";
 import { HookedInstance } from "@/common/ReactHooks";
 import {
 	defineFunctionHook,
@@ -41,6 +42,7 @@ import {
 	unsetNamedEventHandler,
 	unsetPropertyHook,
 } from "@/common/Reflection";
+import { useCosmetics } from "@/composable/useCosmetics";
 import { useChatAPI } from "@/site/twitch.tv/ChatAPI";
 import { determineRatio } from "@/site/twitch.tv/modules/emote-menu/EmoteMenuBackend";
 import EmoteMenuTab from "@/site/twitch.tv/modules/emote-menu/EmoteMenuTab.vue";
@@ -50,7 +52,9 @@ const props = defineProps<{
 	instance: HookedInstance<Twitch.ChatInputController>;
 }>();
 
+const { identity } = useStore();
 const { emoteProviders, currentChannel, imageFormat } = useChatAPI();
+const { emoteSets: personalEmoteSets } = useCosmetics(identity?.id ?? "");
 
 const containerEl = ref();
 containerEl.value = document.querySelector(".chat-input__textarea") ?? undefined;
@@ -137,8 +141,11 @@ watch(
 	(e) => {
 		for (const [p, sets] of Object.entries(e)) {
 			const temp = new Map<string, SevenTV.EmoteSet>();
-			for (const [, set] of Object.entries(sets))
+
+			for (const set of [...Object.values(sets), ...(personalEmoteSets.value ?? [])]) {
 				temp.has(set.name) ? temp.get(set.name)?.emotes.concat(set.emotes ?? []) : temp.set(set.name, set);
+			}
+
 			temp.forEach((s) => s.emotes.sort(sortEmotes));
 			providers.value.set(p as SevenTV.Provider, Array.from(temp.values()).sort(sortSets));
 		}
