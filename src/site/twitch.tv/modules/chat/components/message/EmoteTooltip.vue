@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { DecimalToStringRGBA } from "@/common/Color";
-import { imageHostToSrcset } from "@/common/Image";
+import { imageHostAndSizeToSrcset, imageHostToSrcset } from "@/common/Image";
 import Logo from "@/assets/svg/logos/Logo.vue";
 
 const props = withDefaults(
@@ -53,7 +53,9 @@ const props = withDefaults(
 	{ unload: false, imageFormat: "WEBP" },
 );
 
-const srcset = computed(() => (props.unload ? "" : imageHostToSrcset(props.emote.data!.host, props.imageFormat)));
+const srcset = computed(() =>
+	props.unload ? "" : imageHostAndSizeToSrcset(props.height, props.width, props.emote.data!.host, props.imageFormat),
+);
 const width = computed(() => `${props.width * 2}px`);
 const height = computed(() => `${props.height * 2}px`);
 
