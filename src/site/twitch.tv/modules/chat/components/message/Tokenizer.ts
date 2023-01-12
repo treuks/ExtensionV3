@@ -6,9 +6,13 @@ export class Tokenizer {
 
 	constructor(private parts: Twitch.ChatMessage.Part[]) {}
 
-	private tokenizeText(content: string, emoteMap: Record<string, SevenTV.ActiveEmote>) {
+	private tokenizeText(
+		content: string,
+		emoteMap: Record<string, SevenTV.ActiveEmote>,
+		localEmoteMap: Record<string, SevenTV.ActiveEmote> = {},
+	) {
 		const remainder = content.split(Regex.MessageDelimiter).reduce((pre, cur) => {
-			const emote = emoteMap[cur];
+			const emote = localEmoteMap[cur] ?? emoteMap[cur];
 
 			if (!emote) return pre + cur;
 
@@ -43,13 +47,13 @@ export class Tokenizer {
 		this.newParts.push(sevenTVEmoteToPart(emote));
 	}
 
-	public getParts(emoteMap: Record<string, SevenTV.ActiveEmote>) {
+	public getParts(emoteMap: Record<string, SevenTV.ActiveEmote>, localEmoteMap: Record<string, SevenTV.ActiveEmote>) {
 		this.newParts = [];
 		for (const part of this.parts) {
 			switch (part.type) {
 				case MessagePartType.TEXT:
 				case MessagePartType.MODERATEDTEXT:
-					this.tokenizeText(part.content as string, emoteMap);
+					this.tokenizeText(part.content as string, emoteMap, localEmoteMap);
 
 					break;
 				case MessagePartType.EMOTE:
